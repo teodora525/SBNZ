@@ -102,9 +102,9 @@ Više primera i uputstva možeš naći u dokumentaciji projekta.
 
 ---
 
-## 📖 Projekat razvili
+## 📖 Developed:
 
-- Teodora Nikolić, SV66/2022 — Softversko inženjerstvo i informacione tehnologije (SIIT)
+- Teodora Nikolić,https://github.com/teodora525
 
 ---
 
@@ -114,6 +114,6 @@ Distribuira se pod [MIT licencom](./LICENSE).
 
 ---
 
-## 🙌 Zahvalnice
+## Credits
 
-Ovaj projekat je realizovan u okviru predmeta **Sistemi bazirani na znanju** na Fakultetu tehničkih nauka.
+Ovaj projekat je realizovan u okviru predmeta **Sistemi bazirani na znanju** na Fakultetu tehničkih nauka, smer Softversko inženjerstvo i informacione tehnologije.
