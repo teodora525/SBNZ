@@ -11,18 +11,18 @@
 
 ## 🛡️ Opis projekta
 
-Ovaj projekat je **ekspertski sistem za detekciju i prevenciju web napada** (Dinamički WAF) razvijen u sklopu predmeta "Sistemi bazirani na znanju". Cilj je real-time analiza HTTP zahteva na osnovu fleksibilnih pravila, konteksta i agregacije događaja, kako bi se web aplikacije efikasno zaštitile od savremenih napada kao što su **SQL Injection, XSS, Path Traversal, Brute Force**, i skeniranje endpoint-a.
+Ovaj projekat je **ekspertski sistem za detekciju i prevenciju web napada** (Dinamički WAF) razvijen u sklopu predmeta "Sistemi bazirani na znanju". Cilj je *real-time* analiza HTTP zahteva na osnovu Drools pravila u cilju blokiranja različitih bezbednosnih pretnji.
 
-Projekat koristi domenski specifičan jezik (DSL) za lako definisanje pravila, temeljno agregira događaje kroz vreme (CEP), automatski menja bezbednosni kontekst i podržava proširivu bazu znanja nad Drools engine-om.
+Projekat koristi domenski specifičan jezik (DSL) za lako definisanje pravila, temeljno agregira događaje kroz vreme koristeći CEP (*Complex Event Processing*), automatski menja bezbednosni kontekst na osnovu dešavanja i podržava bazu znanja koja se može lako proširiti.
 
 ---
 
 ## 🚀 Tehnologije
 
-- **Backend:** Java 17+, Spring Boot 3.x, Drools 8.x (rules engine)
-- **Frontend:** Angular 17+ (dashboard, administracija)
+- **Backend:** Java 17+, Spring Boot 3.x, Drools 8.x (Rules Engine)
+- **Frontend:** Angular 17+ (Dashboard, Administracija)
 - **Reverse Proxy:** Nginx
-- **Baza podataka:** PostgreSQL ili drugi RDBMS (za skladište konfiguracija, događaja i izveštaja)
+- **Baza podataka:** PostgreSQL (ili drugi RDBMS za skladište konfiguracija, događaja i izveštaja)
 - **Komunikacija:** REST API
 - **DevOps:** Docker (opciono za deployment), Maven
 
@@ -31,38 +31,40 @@ Projekat koristi domenski specifičan jezik (DSL) za lako definisanje pravila, t
 ## 🏷️ Ključne funkcionalnosti
 
 - Real-time analiza i procesiranje HTTP zahteva
-- Detekcija SQL injection, XSS, path traversal i drugih tipova napada
-- Prepoznavanje i agregacija incidenata pomoću CEP (Complex Event Processing)
-- Fleksibilni režimi zaštite (konteksti): Normal_Traffic, Under_Attack, Maintenance, Zero_Trust
-- Dinamička promena konteksta na osnovu pravila i broja incidenata
-- Odluke: Allow, Drop, Ban, Alert, Log
-- Administratorski dashboard sa prikazom incidenata, blokiranih IP adresa, izveštaja, notifikacija
-- Definisanje i proširivanje pravila kroz user-friendly DSL i Drools templates
+- Detekcija tipičnih napada kao što su **SQL Injection**, **XSS**, **Path Traversal** i drugi
+- Prepoznavanje i agregacija incidenata pomoću CEP tehnika
+- Fleksibilni režimi zaštite (konteksti rada): `Normal_Traffic`, `Under_Attack`, `Maintenance`, `Zero_Trust`
+- Dinamička promena konteksta na osnovu okidanja pravila i broja incidenata
+- Moguće akcije: `Allow`, `Drop`, `Ban`, `Alert`, `Log`
+- Administratorski dashboard za upravljanje: prikaz incidenata, blokiranih IP adresa, izveštaja, i *live* notifikacija
+- Definisanje i proširivanje pravila kroz razumljiv *user-friendly* DSL i Drools templates
 
 ---
 
-## 🛠️ Arhitektura
+## 🛠️ Arhitektura sistema
 
-**Višeslojna arhitektura:**
-1. **Nginx** — reverse proxy, prosleđuje detalje zahteva WAF servisu
-2. **Spring Boot WAF servis** — transformiše zahteve u događaje i prosleđuje Drools engine-u, upravlja konfiguracijama i incidentima
-3. **Drools Engine** — izvršava pravila nad događajima i menja kontekst sistema po potrebi
-4. **Baza podataka** — čuva konfiguracije, pravila, incidente, izveštaje
-5. **Angular frontend** — dashboard za praćenje stanja, administraciju i analitičke izveštaje
-
----
-
-## 📊 Izveštaji & dashboard
-
-- Izveštaji o uzrocima incidenata (root-cause)
-- Liste blokiranih IP adresa i endpointa
-- Statistika napada (tipovi napada, najaktivniji napadači, periodične analize)
-- Prikaz promena konteksta i razloga za promenu
-- Prikaz događaja uživo (live feed, notifikacije)
+**Višeslojna arhitektura obuhvata:**
+1. **Nginx** — Reverse proxy koji prikuplja i prosleđuje detalje zahteva ka WAF servisu.
+2. **Spring Boot WAF servis** — Prima zahteve, transformiše ih u događaje, upravlja konfiguracijama incidenata i komunicira sa engine-om.
+3. **Drools Engine** — Jezgro sistema; procesira događaje i donosi odluke prema definisanim pravilima i po potrebi menja kontekst sistema.
+4. **Baza podataka** — Perzistentno čuva konfiguracije, pravila, istoriju incidenata i podatke za izveštaje.
+5. **Angular frontend** — Klijentski panel namenjen za praćenje stanja, laku administraciju i uvid u analitičke izveštaje.
 
 ---
 
-## 🧩 Primer DLS pravila (domenski jezik za kreiranje pravila)
+## 📊 Izveštaji & Dashboard
+
+- **Izveštaji o uzrocima incidenata** (Root-cause analiza)
+- Pregledne **liste blokiranih IP adresa** i ciljanih endpoint-a
+- **Statistika napada:** najčešći tipovi napada, najaktivniji napadači, periodične vremenske analize
+- Vizuelni prikaz promena bezbednosnog konteksta i razloga za iste
+- *Live feed* i notifikacije o novim događajima na platformi
+
+---
+
+## 🧩 Primer DSL pravila (Domenski jezik)
+
+Umesto pisanja kompleksnog koda, definisanje pravila izgleda ovako:
 
 ```dsl
 when
@@ -72,48 +74,3 @@ then
     block request
     and log as SQL_INJECTION_ATTEMPT
     and increment threat score
-```
-
-Više primera i uputstva možeš naći u dokumentaciji projekta.
-
----
-
-## ▶️ Pokretanje projekta (lokalno)
-
-1. **Kloniraj repozitorijum**
-   ```bash
-   git clone https://github.com/teodora525/SBNZ.git
-   cd SBNZ
-   ```
-
-2. **Backend:**  
-   - Instaliraj Java 17+ i Maven
-   - `cd backend`
-   - `mvn clean package`
-   - Pokreni aplikaciju: `java -jar target/<artifact>.jar`
-
-3. **Frontend:**
-   - Instaliraj Node.js i Angular CLI
-   - `cd frontend`
-   - `npm install`
-   - `ng serve`
-
-4. **Nginx i baza podataka** (opcioni, konfiguracija u `/deploy`)
-
----
-
-## 📖 Developed:
-
-- Teodora Nikolić,https://github.com/teodora525
-
----
-
-## 📄 Licence
-
-Distribuira se pod [MIT licencom](./LICENSE).
-
----
-
-## Credits
-
-Ovaj projekat je realizovan u okviru predmeta **Sistemi bazirani na znanju** na Fakultetu tehničkih nauka, smer Softversko inženjerstvo i informacione tehnologije.
