@@ -1,3 +1,4 @@
+
 # Ekspertski Sistem za Detekciju i Prevenciju Web Napada (Dinamički WAF)
 
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com/)
@@ -74,3 +75,56 @@ then
     block request
     and log as SQL_INJECTION_ATTEMPT
     and increment threat score
+```
+
+> *Više primera i uputstava možete naći u dokumentaciji samog projekta.*
+
+---
+
+## ▶️ Pokretanje projekta (Lokalno)
+
+1. **Klonirajte repozitorijum**
+   ```bash
+   git clone https://github.com/teodora525/SBNZ.git
+   cd SBNZ
+   ```
+
+2. **Backend (Spring Boot):**  
+   - Proverite da li imate instaliranu Javu 17+ i Maven.
+   - Pozicionirajte se u folder backenda:
+     ```bash
+     cd backend
+     mvn clean package
+     java -jar target/sbnz-backend-0.0.1-SNAPSHOT.jar
+     ```
+   *(Napomena: Prilagodite naziv `.jar` fajla u zavisnosti od imena u `pom.xml`).*
+
+3. **Frontend (Angular):**
+   - Proverite da li imate instaliran Node.js i Angular CLI.
+   - Pozicionirajte se u folder frontenda:
+     ```bash
+     cd frontend
+     npm install
+     ng serve
+     ```
+
+4. **Nginx i Baza podataka** (Opciono, konfiguracioni fajlovi se nalaze u `/deploy` folderu).
+
+---
+
+## 👨‍💻 Autori / Developed by
+
+- [Teodora Nikolić](https://github.com/teodora525)
+
+---
+
+## 📄 Licenca
+
+Distribuira se pod [MIT licencom](./LICENSE).
+
+---
+
+## 🎓 Krediti
+
+Ovaj projekat je realizovan u okviru predmeta **Sistemi bazirani na znanju** na Fakultetu tehničkih nauka u Novom Sadu, smer Softversko inženjerstvo i informacione tehnologije (SIIT).
+```
