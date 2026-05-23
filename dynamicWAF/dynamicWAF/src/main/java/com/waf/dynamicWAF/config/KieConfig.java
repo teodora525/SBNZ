@@ -25,6 +25,11 @@ public class KieConfig {
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();
 
+        // Provera da li ima grešaka u DRL sintaksi
+        if (kieBuilder.getResults().hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
+            throw new RuntimeException("Greška pri kompajliranju Drools pravila:\n" + kieBuilder.getResults().toString());
+        }
+
         KieModule kieModule = kieBuilder.getKieModule();
         return kieServices.newKieContainer(kieModule.getReleaseId());
     }
