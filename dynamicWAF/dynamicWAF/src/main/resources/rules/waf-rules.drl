@@ -1,0 +1,53 @@
+package rules;
+
+import com.waf.dynamicWAF.model.RequestEvent;
+import com.waf.dynamicWAF.model.SecurityEvent;
+import com.waf.dynamicWAF.model.SystemContext;
+
+// 1. Pravilo: Detekcija SQL Injection pokušaja u telu zahteva
+rule "SQL Injection Detection"
+when
+    $req: RequestEvent(payload != null, payload.toUpperCase().contains("UNION SELECT"))
+then
+    System.out.println("[UPOZORENJE] Detektovan potencijalni SQL Injection sa IP adrese: " + $req.getIpAddress());
+    $req.setBlocked(true);
+    $req.setBlockReason("SQL Injection Attempt");
+
+    // Generisanje novog događaja (Forward chaining)
+    insert(new SecurityEvent("Potential_SQL_Injection", $req.getIpAddress(), java.time.LocalDateTime.now()));
+end
+
+// 2. Pravilo: Detekcija XSS napada
+rule "XSS Detection"
+when
+    $req: RequestEvent(payload != null, payload.toLowerCase().contains("<script>"))
+then
+    System.out.println("[UPOZORENJE] Detektovan XSS obrazac sa IP adrese: " + $req.getIpAddress());
+    $req.setBlocked(true);
+    $req.setBlockReason("XSS Attempt");
+
+    // Generisanje novog događaja (Forward chaining)
+    insert(new SecurityEvent("Potential_XSS", $req.getIpAddress(), java.time.LocalDateTime.now()));
+end
+
+// 3. Pravilo: Forward Chaining - Reakcija na izvedene događaje
+rule "Malicious Payload Confirmed"
+when
+    // Ovo pravilo se okida TEK KADA jedno od prva dva pravila ubaci SecurityEvent u memoriju
+    $sec: SecurityEvent(eventType == "Potential_SQL_Injection" || eventType == "Potential_XSS")
+then
+    System.out.println("[AKCIJA] Maliciozni payload potvrđen za IP: " + $sec.getSourceIp() + ". Incident je zabeležen.");
+end
+
+// 4. Pravilo: Zero Trust režim rada (Upotreba konteksta)
+rule "Zero Trust Block Unverified"
+when
+    // Proveravamo da li je aktivan Zero Trust režim
+    SystemContext( this == SystemContext.ZERO_TRUST )
+    // Blokiramo sve što ne dolazi sa "pouzdane" IP adrese (npr. interne mreže)
+    $req: RequestEvent(ipAddress != "10.0.0.1")
+then
+    System.out.println("[ZERO TRUST] Blokiran zahtev sa nepouzdane IP adrese: " + $req.getIpAddress());
+    $req.setBlocked(true);
+    $req.setBlockReason("Zero Trust Policy Violation");
+end
