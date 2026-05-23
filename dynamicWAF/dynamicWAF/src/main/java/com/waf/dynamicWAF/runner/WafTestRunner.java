@@ -54,7 +54,7 @@ public class WafTestRunner implements CommandLineRunner {
         kieSession.dispose();
 
         System.out.println("\n=========================================");
-        System.out.println("UKUPNO OPALJENIH PRAVILA: " + firedRules);
+        System.out.println("UKUPNO TRIGEGROVANO PRAVILA: " + firedRules);
         System.out.println("=========================================");
     }
 }
