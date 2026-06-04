@@ -1,0 +1,73 @@
+{
+	"info": {
+		"_postman_id": "50363bca-3312-4b02-96b6-c1eb84e1b685",
+		"name": "WAF Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42114073",
+		"_collection_link": "https://SBNZ88.postman.co/workspace/787701e4-3df3-400b-b57e-cc442d97cc9c/collection/42114073-50363bca-3312-4b02-96b6-c1eb84e1b685?action=share&source=collection_link&creator=42114073"
+	},
+	"item": [
+		{
+			"name": "1. Test obicnog request-a",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/waf/alert?ip=192.168.1.50&type=SQL_INJECTION",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"waf",
+						"alert"
+					],
+					"query": [
+						{
+							"key": "ip",
+							"value": "192.168.1.50"
+						},
+						{
+							"key": "type",
+							"value": "SQL_INJECTION"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Bruteforce attack (CEP)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/waf/alert?ip=192.168.1.50&type=SQL_INJECTION",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"waf",
+						"alert"
+					],
+					"query": [
+						{
+							"key": "ip",
+							"value": "192.168.1.50"
+						},
+						{
+							"key": "type",
+							"value": "SQL_INJECTION"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
