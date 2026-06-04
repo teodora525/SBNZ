@@ -10,27 +10,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class KieConfig {
+public class DroolsConfig {
 
-    private static final String RULES_PATH = "rules/waf-rules.drl";
+    private static final String RULES_PATH = "rules/cep-rules.drl";
 
     @Bean
     public KieContainer kieContainer() {
         KieServices kieServices = KieServices.Factory.get();
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
 
-        // Učitavamo DRL fajl iz resources foldera
+        // 1. Učitavamo .drl fajl
         kieFileSystem.write(ResourceFactory.newClassPathResource(RULES_PATH));
+
+        // 2. KLJUČNO: Dinamički kreiramo kmodule.xml koji globalno forsira STREAM mod
+        String kmoduleXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kmodule xmlns=\"http://www.drools.org/xsd/kmodule\">\n" +
+                "  <kbase name=\"CEPBase\" default=\"true\" eventProcessingMode=\"stream\" equalsBehavior=\"identity\">\n" +
+                "    <ksession name=\"CEPSession\" default=\"true\" clockType=\"realtime\"/>\n" +
+                "  </kbase>\n" +
+                "</kmodule>";
+        kieFileSystem.write("src/main/resources/META-INF/kmodule.xml", kmoduleXml);
 
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();
-
-        // Provera da li ima grešaka u DRL sintaksi
-        if (kieBuilder.getResults().hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
-            throw new RuntimeException("Greška pri kompajliranju Drools pravila:\n" + kieBuilder.getResults().toString());
-        }
-
         KieModule kieModule = kieBuilder.getKieModule();
+
         return kieServices.newKieContainer(kieModule.getReleaseId());
     }
 }
