@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.CrossOrigin; // Dodaj import
 
+@CrossOrigin(origins = "http://localhost:4200") // <-- NOVO: Dozvoljavamo Angularu pristup
 @RestController
 @RequestMapping("/api/waf")
+
 public class WafCepController {
 
     private final WafCepService wafCepService;

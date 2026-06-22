@@ -1,0 +1,36 @@
+<div class="dashboard-container">
+  <h1>🛡️ WAF & CEP Dashboard</h1>
+
+  <div class="control-panel">
+    <h3>Simulacija Brute Force Napada</h3>
+    <p>Unesi IP adresu sa koje želiš da pokreneš napad:</p>
+
+    <div class="input-group">
+      <input type="text" [(ngModel)]="targetIp" placeholder="Unesi IP adresu" />
+      <button (click)="triggerAttack()">🔥 Pokreni Napad</button>
+    </div>
+
+    <p class="status-msg" *ngIf="statusMessage">{{ statusMessage }}</p>
+  </div>
+
+  <div class="results-panel">
+    <h3>🚨 Trenutno Banovane IP Adrese</h3>
+
+    <p *ngIf="bannedIps.length === 0">Trenutno nema pretnji. Sistem je bezbedan.</p>
+
+    <table *ngIf="bannedIps.length > 0">
+      <thead>
+      <tr>
+        <th>IP Adresa</th>
+        <th>Razlog Blokade</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let ban of bannedIps">
+        <td><strong>{{ ban.ipAddress }}</strong></td>
+        <td style="color: red;">{{ ban.reason }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
