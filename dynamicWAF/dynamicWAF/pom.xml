@@ -10,8 +10,14 @@
 	<groupId>com.waf</groupId>
 	<artifactId>dynamicWAF</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 	<name>dynamicWAF</name>
 	<description>Ekspertski sistem za detekciju i prevenciju web napada</description>
+	<modules>
+		<module>dynamicWAF-model</module>
+		<module>dynamicWAF-kjar</module>
+		<module>dynamicWAF-backend</module>
+	</modules>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
