@@ -1,8 +1,11 @@
 package com.waf.dynamicWAF.controller;
 
+import com.waf.dynamicWAF.model.IpBan;
 import com.waf.dynamicWAF.service.WafCepService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/waf")
@@ -49,5 +52,15 @@ public class WafCepController {
         }
 
         return ResponseEntity.ok("Simulacija napada završena za IP: " + ip + ". Proveri konzolu za CEP alarm!");
+    }
+
+    /**
+     * --- NOVO: Endpoint za povlačenje liste svih banovanih IP adresa ---
+     * Primer poziva: GET http://localhost:8080/api/waf/banned-ips
+     */
+    @GetMapping("/banned-ips")
+    public ResponseEntity<List<IpBan>> getBannedIps() {
+        List<IpBan> bannedIps = wafCepService.getBannedIps();
+        return ResponseEntity.ok(bannedIps);
     }
 }

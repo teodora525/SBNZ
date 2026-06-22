@@ -1,0 +1,5 @@
+com\waf\dynamicWAF\controller\WafCepController.class
+com\waf\dynamicWAF\service\WafCepService.class
+com\waf\dynamicWAF\runner\WafTestRunner.class
+com\waf\dynamicWAF\config\DroolsConfig.class
+com\waf\dynamicWAF\DynamicWafApplication.class

@@ -1,0 +1,5 @@
+com\waf\dynamicWAF\model\SystemContext.class
+com\waf\dynamicWAF\model\RequestEvent.class
+com\waf\dynamicWAF\model\ThreatAlert.class
+com\waf\dynamicWAF\model\IpBan.class
+com\waf\dynamicWAF\model\SecurityEvent.class
