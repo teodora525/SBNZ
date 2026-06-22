@@ -8,12 +8,16 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="dynamicWAF-model" />
+        <module name="dynamicWAF-backend" />
+        <module name="dynamicWAF-kjar" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="dynamicWAF" options="-parameters" />
+      <module name="dynamicWAF" options="" />
+      <module name="dynamicWAF-backend" options="-parameters" />
+      <module name="dynamicWAF-kjar" options="-parameters" />
       <module name="dynamicWAF-model" options="-parameters" />
     </option>
   </component>
