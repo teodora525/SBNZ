@@ -1,0 +1,29 @@
+template header
+keyword
+threatName
+action
+
+package rules;
+
+import com.waf.dynamicWAF.model.RequestEvent;
+import com.waf.dynamicWAF.model.ThreatAlert;
+
+template "BlockMaliciousKeyword"
+
+rule "Dinamicno pravilo za blokiranje kljucne reci_@{row.rowNumber}"
+when
+    $req : RequestEvent(payload != null, payload contains "@{keyword}")
+then
+    System.out.println("TEMPLATE LOG: Detektovana kljucna rec '@{keyword}' sa IP: " + $req.getIpAddress());
+    insert(new ThreatAlert($req.getIpAddress(), "@{threatName}"));
+
+    // Ako je akcija block, odmah blokiramo
+    if ("@{action}".equals("block request")) {
+        modify($req) {
+            setBlocked(true),
+            setBlockReason("Blocked by Dynamic Template Rule: @{threatName}")
+        }
+    }
+end
+
+end template

@@ -1,69 +1,87 @@
 package com.waf.dynamicWAF.controller;
 
 import com.waf.dynamicWAF.model.IpBan;
+import com.waf.dynamicWAF.model.RequestEvent;
 import com.waf.dynamicWAF.service.WafCepService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
-import org.springframework.web.bind.annotation.CrossOrigin; // Dodaj import
+import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:4200") // <-- NOVO: Dozvoljavamo Angularu pristup
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/waf")
-
 public class WafCepController {
 
     private final WafCepService wafCepService;
 
-    // Injektujemo naš CEP servis
     public WafCepController(WafCepService wafCepService) {
         this.wafCepService = wafCepService;
     }
 
     /**
-     * Endpoint za slanje pojedinačnog sumnjivog zahteva.
-     * Primer poziva: POST http://localhost:8080/api/waf/alert?ip=192.168.1.50&type=SQL_INJECTION
+     * Endpoint za slanje sumnjivog HTTP zahteva.
      */
-    @PostMapping("/alert")
-    public ResponseEntity<String> triggerAlert(
+    @PostMapping("/analyze")
+    public ResponseEntity<String> analyzeRequest(
             @RequestParam String ip,
-            @RequestParam String type) {
+            @RequestParam(defaultValue = "GET") String method,
+            @RequestParam(defaultValue = "/") String uri,
+            @RequestParam(required = false) String payload,
+            @RequestParam(required = false) String queryKey,
+            @RequestParam(required = false) String queryValue) {
 
-        wafCepService.receiveSuspiciousRequest(ip, type);
-        return ResponseEntity.ok("Događaj uspešno poslat u Drools engine za IP: " + ip);
+        Map<String, String> params = new HashMap<>();
+        if (queryKey != null && queryValue != null) {
+            params.put(queryKey, queryValue);
+        }
+
+        // Kreiramo pravi događaj sa praznim headerima
+        RequestEvent event = new RequestEvent(ip, method, uri, new HashMap<>(), params, payload);
+
+        wafCepService.processRequest(event);
+        return ResponseEntity.ok("Zahtev poslat u Drools na analizu za IP: " + ip);
     }
 
     /**
-     * Ključni endpoint za odbranu domaćeg!
-     * Simulira automatski napad ispaljivanjem 5 zahteva u sekundi sa iste IP adrese.
-     * Primer poziva: POST http://localhost:8080/api/waf/simulate-attack?ip=192.168.1.100
+     * Ključni endpoint za simulaciju napada!
      */
     @PostMapping("/simulate-attack")
     public ResponseEntity<String> simulateAttack(@RequestParam String ip) {
         System.out.println("--- ZAPOČINJEM SIMULACIJU BRUTE FORCE NAPADA ---");
 
-        // Ispaljujemo 5 sumnjivih događaja zaredom u kratkom vremenskom roku
-        for (int i = 1; i <= 5; i++) {
-            wafCepService.receiveSuspiciousRequest(ip, "FAILED_LOGIN");
+        for (int i = 1; i <= 6; i++) {
+            // Simuliramo POST zahteve na /login endpoint
+            RequestEvent event = new RequestEvent(ip, "POST", "/login", new HashMap<>(), new HashMap<>(), null);
+            wafCepService.processRequest(event);
             try {
-                // Mala pauza od 200 milisekundi između zahteva, čisto da simuliramo realan protok
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
 
-        return ResponseEntity.ok("Simulacija napada završena za IP: " + ip + ". Proveri konzolu za CEP alarm!");
+        return ResponseEntity.ok("Simulacija napada završena za IP: " + ip + ". Proveri Dashboard!");
     }
 
-    /**
-     * --- NOVO: Endpoint za povlačenje liste svih banovanih IP adresa ---
-     * Primer poziva: GET http://localhost:8080/api/waf/banned-ips
-     */
     @GetMapping("/banned-ips")
     public ResponseEntity<List<IpBan>> getBannedIps() {
         List<IpBan> bannedIps = wafCepService.getBannedIps();
         return ResponseEntity.ok(bannedIps);
+    }
+
+    /**
+     * Endpoint za dinamicko dodavanje pravila u letu preko Drools Templates-a
+     */
+    @PostMapping("/add-rule")
+    public ResponseEntity<String> addDynamicRule(
+            @RequestParam String keyword,
+            @RequestParam String threatName,
+            @RequestParam(defaultValue = "block request") String action) {
+
+        wafCepService.addDynamicRuleFromTemplate(keyword, threatName, action);
+        return ResponseEntity.ok("Uspesno dodato dinamicko pravilo za kljucnu rec: " + keyword);
     }
 }

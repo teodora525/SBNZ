@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.waf.dynamicWAF.rules.CepRulesTest" time="11.644" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.waf.dynamicWAF.rules.CepRulesTest" time="4.55" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="RS"/>
     <property name="sun.boot.library.path" value="C:\Users\teani\.jdks\ms-17.0.19\bin"/>
-    <property name="sun.java.command" value="C:\Users\teani\AppData\Local\Temp\surefire2201967575544168187\surefirebooter-20260622171033156_3.jar C:\Users\teani\AppData\Local\Temp\surefire2201967575544168187 2026-06-22T17-10-32_469-jvmRun1 surefire-20260622171033156_1tmp surefire_0-20260622171033156_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\teani\AppData\Local\Temp\surefire3282753970757891981\surefirebooter-20260624082516197_3.jar C:\Users\teani\AppData\Local\Temp\surefire3282753970757891981 2026-06-24T08-25-15_619-jvmRun1 surefire-20260624082516197_1tmp surefire_0-20260624082516197_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\teani\Desktop\siit\8. semestar\sbnz\projekat\SBNZ\dynamicWAF\dynamicWAF\dynamicWAF-kjar\target\test-classes;C:\Users\teani\Desktop\siit\8. semestar\sbnz\projekat\SBNZ\dynamicWAF\dynamicWAF\dynamicWAF-kjar\target\classes;C:\Users\teani\.m2\repository\org\drools\drools-compiler\7.73.0.Final\drools-compiler-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\drools\drools-core-reflective\7.73.0.Final\drools-core-reflective-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\kie-memory-compiler\7.73.0.Final\kie-memory-compiler-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\drools\drools-ecj\7.73.0.Final\drools-ecj-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\kie-api\7.73.0.Final\kie-api-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\kie-internal\7.73.0.Final\kie-internal-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\soup\kie-soup-maven-support\7.73.0.Final\kie-soup-maven-support-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\antlr\antlr-runtime\3.5.2\antlr-runtime-3.5.2.jar;C:\Users\teani\.m2\repository\com\thoughtworks\xstream\xstream\1.4.19\xstream-1.4.19.jar;C:\Users\teani\.m2\repository\io\github\x-stream\mxparser\1.2.2\mxparser-1.2.2.jar;C:\Users\teani\.m2\repository\xmlpull\xmlpull\1.1.3.1\xmlpull-1.1.3.1.jar;C:\Users\teani\.m2\repository\org\slf4j\slf4j-api\2.0.11\slf4j-api-2.0.11.jar;C:\Users\teani\.m2\repository\org\drools\drools-core\7.73.0.Final\drools-core-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\soup\kie-soup-xstream\7.73.0.Final\kie-soup-xstream-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\drools\drools-core-dynamic\7.73.0.Final\drools-core-dynamic-7.73.0.Final.jar;C:\Users\teani\.m2\repository\commons-codec\commons-codec\1.16.0\commons-codec-1.16.0.jar;C:\Users\teani\Desktop\siit\8. semestar\sbnz\projekat\SBNZ\dynamicWAF\dynamicWAF\dynamicWAF-model\target\dynamicWAF-model-0.0.1-SNAPSHOT.jar;C:\Users\teani\.m2\repository\org\projectlombok\lombok\1.18.30\lombok-1.18.30.jar;C:\Users\teani\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.1\junit-jupiter-engine-5.10.1.jar;C:\Users\teani\.m2\repository\org\junit\platform\junit-platform-engine\1.10.1\junit-platform-engine-1.10.1.jar;C:\Users\teani\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\teani\.m2\repository\org\junit\platform\junit-platform-commons\1.10.1\junit-platform-commons-1.10.1.jar;C:\Users\teani\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.1\junit-jupiter-api-5.10.1.jar;C:\Users\teani\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\teani\.m2\repository\org\drools\drools-mvel\7.73.0.Final\drools-mvel-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\mvel\mvel2\2.4.14.Final\mvel2-2.4.14.Final.jar;C:\Users\teani\.m2\repository\org\kie\soup\kie-soup-project-datamodel-commons\7.73.0.Final\kie-soup-project-datamodel-commons-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\soup\kie-soup-commons\7.73.0.Final\kie-soup-commons-7.73.0.Final.jar;C:\Users\teani\.m2\repository\org\kie\soup\kie-soup-project-datamodel-api\7.73.0.Final\kie-soup-project-datamodel-api-7.73.0.Final.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\teani\AppData\Local\Temp\surefire2201967575544168187\surefirebooter-20260622171033156_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\teani\AppData\Local\Temp\surefire3282753970757891981\surefirebooter-20260624082516197_3.jar"/>
     <property name="user.script" value="Latn"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.19+10-LTS"/>
@@ -60,7 +60,7 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="testBruteForceDetection" classname="com.waf.dynamicWAF.rules.CepRulesTest" time="11.412">
+  <testcase name="testBruteForceDetection" classname="com.waf.dynamicWAF.rules.CepRulesTest" time="4.507">
     <system-out><![CDATA[CEP ALARM: Detektovan napad sa IP adrese 192.168.1.50! ViĹˇe od 5 pretnji u minutu.
 Broj okinutih pravila: 1
 ]]></system-out>

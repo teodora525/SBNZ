@@ -4,20 +4,12 @@
       <string>com.waf.dynamicWAF.model.RequestEvent</string>
       <org.drools.core.rule.TypeMetaInfo>
         <kind>CLASS</kind>
-        <role>FACT</role>
+        <role>EVENT</role>
         <isDeclaredType>false</isDeclaredType>
       </org.drools.core.rule.TypeMetaInfo>
     </entry>
     <entry>
-      <string>com.waf.dynamicWAF.model.SecurityEvent</string>
-      <org.drools.core.rule.TypeMetaInfo>
-        <kind>CLASS</kind>
-        <role>FACT</role>
-        <isDeclaredType>false</isDeclaredType>
-      </org.drools.core.rule.TypeMetaInfo>
-    </entry>
-    <entry>
-      <string>com.waf.dynamicWAF.model.SystemContext</string>
+      <string>com.waf.dynamicWAF.model.WafConfiguration</string>
       <org.drools.core.rule.TypeMetaInfo>
         <kind>CLASS</kind>
         <role>FACT</role>
@@ -33,6 +25,14 @@
       </org.drools.core.rule.TypeMetaInfo>
     </entry>
     <entry>
+      <string>com.waf.dynamicWAF.model.ThreatScore</string>
+      <org.drools.core.rule.TypeMetaInfo>
+        <kind>CLASS</kind>
+        <role>FACT</role>
+        <isDeclaredType>false</isDeclaredType>
+      </org.drools.core.rule.TypeMetaInfo>
+    </entry>
+    <entry>
       <string>com.waf.dynamicWAF.model.IpBan</string>
       <org.drools.core.rule.TypeMetaInfo>
         <kind>CLASS</kind>
@@ -45,12 +45,13 @@
     <entry>
       <string>rules</string>
       <set>
-        <string>SQL Injection Detection</string>
+        <string>Detekcija XSS pokušaja</string>
+        <string>Banovanje IP adrese zbog prekoračenja poena (Context Aware)</string>
         <string>pribaviSveBanovaneIpAdrese</string>
+        <string>Detekcija SQL Injection pokušaja</string>
+        <string>Grupisanje pretnji u Malicious Payload</string>
+        <string>Reakcija na Malicious Payload</string>
         <string>Detekcija Brute Force napada preko CEP-a</string>
-        <string>Zero Trust Block Unverified</string>
-        <string>XSS Detection</string>
-        <string>Malicious Payload Confirmed</string>
       </set>
     </entry>
   </rulesByPackage>

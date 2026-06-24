@@ -31,17 +31,14 @@ public class WafTestRunner implements CommandLineRunner {
         // 3. Kreiranje testnih HTTP zahteva
         // - Zahtev 1: Legitimni korisnik
         Map<String, String> normalQueryParams = new HashMap<>();
-        RequestEvent normalReq = new RequestEvent("192.168.1.5", "GET", "/api/users", normalQueryParams, "{}");
-
-        // - Zahtev 2: Pokušaj SQL Injection-a
+        RequestEvent normalReq = new RequestEvent("192.168.1.5", "GET", "/api/users", new java.util.HashMap<>(), normalQueryParams, "{}");
+        // Zahtev 2: Pokušaj SQL Injection-a
         Map<String, String> sqlQueryParams = new HashMap<>();
-        RequestEvent sqlReq = new RequestEvent("203.0.113.42", "POST", "/api/login", sqlQueryParams, "{\"username\": \"admin\", \"password\": \"' UNION SELECT * FROM users\"}");
+        RequestEvent sqlReq = new RequestEvent("203.0.113.42", "POST", "/api/login", new HashMap<>(), sqlQueryParams, "{\"username\": \"admin\", \"password\": \"' UNION SELECT * FROM users\"}");
 
-        // - Zahtev 3: Pokušaj XSS-a
+// Zahtev 3: Pokušaj XSS-a
         Map<String, String> xssQueryParams = new HashMap<>();
-        RequestEvent xssReq = new RequestEvent("198.51.100.7", "POST", "/api/comments", xssQueryParams, "<script>alert('XSS')</script>");
-
-        // 4. Ubacivanje zahteva u radnu memoriju
+        RequestEvent xssReq = new RequestEvent("198.51.100.7", "POST", "/api/comments", new HashMap<>(), xssQueryParams, "<script>alert('XSS')</script>");
         kieSession.insert(normalReq);
         kieSession.insert(sqlReq);
         kieSession.insert(xssReq);

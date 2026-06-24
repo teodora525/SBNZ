@@ -1,51 +1,69 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WafService } from '../../services/waf';
+import {WafService} from '../../services/waf';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule], // Uvozimo module neophodne za rad sa formama i listama
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
   bannedIps: any[] = [];
-  targetIp: string = '10.0.0.99'; // Neka default IP adresa za testiranje
   statusMessage: string = '';
+
+  // Parametri za napad
+  targetIp: string = '192.168.1.5';
+  attackPayload: string = '';
+
+  // Parametri za novo pravilo (Template)
+  newRuleKeyword: string = 'UNION SELECT';
+  newRuleThreat: string = 'SQL_INJECTION';
 
   constructor(private wafService: WafService) {}
 
-  // Ova metoda se poziva automatski čim se stranica učita
   ngOnInit(): void {
     this.fetchBannedIps();
   }
 
-  // Funkcija za povlačenje podataka
   fetchBannedIps() {
     this.wafService.getBannedIps().subscribe({
-      next: (data) => {
-        this.bannedIps = data;
-      },
-      error: (err) => console.error('Greška pri učitavanju adresa:', err)
+      next: (data) => this.bannedIps = data,
+      error: (err) => console.error(err)
     });
   }
 
-  // Funkcija koja se okida kada klikneš na dugme
   triggerAttack() {
-    this.statusMessage = 'Simulacija u toku, ispaljujem zahteve...';
+    this.statusMessage = 'Šaljem sumnjiv zahtev...';
+    this.wafService.analyzeRequest(this.targetIp, this.attackPayload).subscribe({
+      next: (res) => {
+        this.statusMessage = res;
+        setTimeout(() => this.fetchBannedIps(), 500);
+      },
+      error: (err) => console.error(err)
+    });
+  }
 
+  triggerBruteForce() {
+    this.statusMessage = 'Simulacija Brute Force napada u toku...';
     this.wafService.simulateAttack(this.targetIp).subscribe({
       next: (res) => {
         this.statusMessage = res;
-        // Čekamo pola sekunde da Drools odradi svoje i onda osvežavamo listu na ekranu
-        setTimeout(() => this.fetchBannedIps(), 500);
+        setTimeout(() => this.fetchBannedIps(), 1000);
       },
-      error: (err) => {
-        this.statusMessage = 'Greška pri simulaciji!';
-        console.error(err);
-      }
+      error: (err) => console.error(err)
+    });
+  }
+
+  addNewRule() {
+    this.statusMessage = 'Kreiram pravilo u letu...';
+    this.wafService.addDynamicRule(this.newRuleKeyword, this.newRuleThreat).subscribe({
+      next: (res) => {
+        this.statusMessage = res;
+      },
+      error: (err) => console.error(err)
     });
   }
 }

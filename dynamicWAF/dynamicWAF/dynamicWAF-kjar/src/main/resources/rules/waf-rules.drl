@@ -1,53 +1,120 @@
 package rules;
 
 import com.waf.dynamicWAF.model.RequestEvent;
-import com.waf.dynamicWAF.model.SecurityEvent;
-import com.waf.dynamicWAF.model.SystemContext;
+import com.waf.dynamicWAF.model.ThreatAlert;
+import com.waf.dynamicWAF.model.ThreatScore;
+import com.waf.dynamicWAF.model.WafConfiguration;
+import com.waf.dynamicWAF.model.IpBan;
 
-// 1. Pravilo: Detekcija SQL Injection pokušaja u telu zahteva
-rule "SQL Injection Detection"
+// ---------------------------------------------------------
+// NIVO 1: DETEKCIJA (Oslanjamo se na Payload)
+// ---------------------------------------------------------
+
+rule "Detekcija SQL Injection pokušaja"
 when
-    $req: RequestEvent(payload != null, payload.toUpperCase().contains("UNION SELECT"))
+    // Trazimo zahtev koji ima payload i sadrzi tipicne SQL injekcije
+    $req : RequestEvent(payload != null, payload.toUpperCase() contains "UNION SELECT" || payload.toUpperCase() contains "OR '1'='1")
 then
-    System.out.println("[UPOZORENJE] Detektovan potencijalni SQL Injection sa IP adrese: " + $req.getIpAddress());
-    $req.setBlocked(true);
-    $req.setBlockReason("SQL Injection Attempt");
+    System.out.println("LOG NIVO 1: Sumnjiv SQL kod detektovan sa IP: " + $req.getIpAddress());
 
-    // Generisanje novog događaja (Forward chaining)
-    insert(new SecurityEvent("Potential_SQL_Injection", $req.getIpAddress(), java.time.LocalDateTime.now()));
+    // DISPATCH: Ubacujemo novi događaj u memoriju (OVO JE POČETAK FORWARD CHAINING-a)
+    insert(new ThreatAlert($req.getIpAddress(), "POTENTIAL_SQL_INJECTION"));
 end
 
-// 2. Pravilo: Detekcija XSS napada
-rule "XSS Detection"
+rule "Detekcija XSS pokušaja"
 when
-    $req: RequestEvent(payload != null, payload.toLowerCase().contains("<script>"))
+    $req : RequestEvent(payload != null, payload.toLowerCase() contains "<script>")
 then
-    System.out.println("[UPOZORENJE] Detektovan XSS obrazac sa IP adrese: " + $req.getIpAddress());
-    $req.setBlocked(true);
-    $req.setBlockReason("XSS Attempt");
-
-    // Generisanje novog događaja (Forward chaining)
-    insert(new SecurityEvent("Potential_XSS", $req.getIpAddress(), java.time.LocalDateTime.now()));
+    System.out.println("LOG NIVO 1: Sumnjiv XSS kod detektovan sa IP: " + $req.getIpAddress());
+    insert(new ThreatAlert($req.getIpAddress(), "POTENTIAL_XSS"));
 end
 
-// 3. Pravilo: Forward Chaining - Reakcija na izvedene događaje
-rule "Malicious Payload Confirmed"
+// ---------------------------------------------------------
+// NIVO 2: FORWARD CHAINING (Grupisanje pretnji)
+// ---------------------------------------------------------
+
+rule "Grupisanje pretnji u Malicious Payload"
 when
-    // Ovo pravilo se okida TEK KADA jedno od prva dva pravila ubaci SecurityEvent u memoriju
-    $sec: SecurityEvent(eventType == "Potential_SQL_Injection" || eventType == "Potential_XSS")
+    // Ako je Drools prethodno ubacio bilo koji od ova dva alarma, hvatamo ga
+    $alert : ThreatAlert(alertType == "POTENTIAL_SQL_INJECTION" || alertType == "POTENTIAL_XSS")
 then
-    System.out.println("[AKCIJA] Maliciozni payload potvrđen za IP: " + $sec.getSourceIp() + ". Incident je zabeležen.");
+    System.out.println("LOG NIVO 2: Apstrahovanje pretnje u MALICIOUS_PAYLOAD_DETECTED za IP: " + $alert.getSourceIp());
+
+    // Opet dispatch (lanac se nastavlja)
+    insert(new ThreatAlert($alert.getSourceIp(), "MALICIOUS_PAYLOAD_DETECTED"));
 end
 
-// 4. Pravilo: Zero Trust režim rada (Upotreba konteksta)
-rule "Zero Trust Block Unverified"
+// ---------------------------------------------------------
+// NIVO 3: REAKCIJA NA APSTRAHOVANU PRETNJU
+// ---------------------------------------------------------
+
+rule "Reakcija na Malicious Payload"
 when
-    // Proveravamo da li je aktivan Zero Trust režim
-    SystemContext( this == SystemContext.ZERO_TRUST )
-    // Blokiramo sve što ne dolazi sa "pouzdane" IP adrese (npr. interne mreže)
-    $req: RequestEvent(ipAddress != "10.0.0.1")
+    // Kada dodjemo do Malicious Payload-a, trazimo taj originalni zahtev da ga blokiramo i score da ga povecamo
+    $alert : ThreatAlert(alertType == "MALICIOUS_PAYLOAD_DETECTED", $ip : sourceIp)
+    // ISPRAVLJENO: Koristimo "blocked == false" umesto "isBlocked"
+    $req : RequestEvent(ipAddress == $ip, blocked == false)
+    $score : ThreatScore(ipAddress == $ip)
 then
-    System.out.println("[ZERO TRUST] Blokiran zahtev sa nepouzdane IP adrese: " + $req.getIpAddress());
-    $req.setBlocked(true);
-    $req.setBlockReason("Zero Trust Policy Violation");
+    // Blokiramo zahtev
+    modify($req) {
+        setBlocked(true),
+        setBlockReason("Malicious Payload Detected")
+    }
+    // Dodajemo kaznene poene
+    modify($score) {
+        increment(50)
+    }
+    System.out.println("LOG NIVO 3 (AKCIJA): Zahtev blokiran! Threat Score za " + $ip + " je skočio na: " + $score.getScore());
+end
+
+// ---------------------------------------------------------
+// NIVO 4: KONAČNA ODLUKA BAZIRANA NA KONTEKSTU C[K]
+// ---------------------------------------------------------
+
+rule "Banovanje IP adrese zbog prekoračenja poena (Context Aware)"
+when
+    // Izvlačimo WafConfiguration koji smo ubacili prilikom paljenja aplikacije
+    $config : WafConfiguration($maxScore : maxAllowedScore)
+
+    // Proveravamo da li je ThreatScore prebacio limit za TRENUTNI kontekst
+    $score : ThreatScore($ip : ipAddress, score > $maxScore)
+
+    // Osiguravamo se da ga nismo vec banovali
+    not IpBan(ipAddress == $ip)
+then
+    System.out.println("LOG NIVO 4 (ALARM): Threat Score (" + $score.getScore() + ") prešao limit (" + $maxScore + ")! Banujem IP: " + $ip);
+
+    // Finalna akcija - ubacivanje Bana
+    insert(new IpBan($ip, "Prekoračen Threat Score limit u kontekstu: " + $config.getCurrentContext()));
+end
+
+// ---------------------------------------------------------
+// NIVO 5: CEP (Complex Event Processing) - Ponašanje kroz vreme
+// ---------------------------------------------------------
+
+rule "CEP - Detekcija Brute Force napada"
+when
+    // 1. Uzimamo limit iz trenutne WAF konfiguracije (C[K])
+    $config : WafConfiguration($limit : maxFailedLoginsPerMinute)
+
+    // 2. Fiksiramo IP adresu sa trenutnog zahteva
+    $req1 : RequestEvent(httpMethod == "POST", uri == "/login", $ip : ipAddress)
+
+    // 3. CEP MAGIJA: Brojimo koliko je ovakvih zahteva sa te IP adrese stiglo u poslednjih 1 minut
+    Number(intValue >= $limit) from accumulate(
+        $req2 : RequestEvent(httpMethod == "POST", uri == "/login", ipAddress == $ip) over window:time(1m),
+        count($req2)
+    )
+
+    // 4. Osiguravamo se da nismo već banovali ovu IP adresu
+    not IpBan(ipAddress == $ip)
+then
+    System.out.println("LOG CEP: Detektovan BRUTE FORCE napad sa IP: " + $ip + ". Premašen limit od " + $limit + " pokušaja!");
+
+    // Beležimo pretnju
+    insert(new ThreatAlert($ip, "BRUTE_FORCE_ATTACK"));
+
+    // Automatski Ban
+    insert(new IpBan($ip, "Brute Force (> " + $limit + " login pokušaja) u kontekstu: " + $config.getCurrentContext()));
 end
